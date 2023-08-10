@@ -12,8 +12,9 @@
 
  :root {
   /* colors */
-  --link-color: #035fe6;
-  --link-hover-color: #136ff6;
+  --link-color: #004dff;
+  --secondary-link-color: #004dff;
+  --link-hover-color: #008;
   --background-color: #fff;
   --overlay-background-color: #eee;
   --highlight-background-color: #ccc;
@@ -129,13 +130,20 @@ a:any-link {
 }
 
 a:hover {
-  text-decoration: underline;
   color: var(--link-hover-color);
+  text-decoration: none;
 }
 
 /* buttons */
 a.button:any-link, button {
-  font-family: var(--body-font-family);
+  font-family: 'Graphik Semibold';
+  text-transform: uppercase;
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  color: var(--link-color);
+  text-decoration: none;
+
+  /* font-family: var(--body-font-family);
   display: inline-block;
   box-sizing: border-box;
   text-decoration: none;
@@ -151,23 +159,24 @@ a.button:any-link, button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 30px;
+  border-radius: 30px; */
 }
 
 a.button:hover, a.button:focus, button:hover, button:focus  {
-  background-color: var(--link-hover-color);
+  color: var(--link-hover-color);
+  /* background-color: var(--link-hover-color); */
   cursor: pointer;
 }
 
-button:disabled, button:disabled:hover {
+/* button:disabled, button:disabled:hover {
   background-color: var(--overlay-background-color);
   cursor: unset;
-}
+} */
 
 a.button.secondary, button.secondary {
-  background-color: unset;
-  border: 2px solid currentcolor;
-  color: var(--text-color)
+  /* background-color: unset; */
+  /* border: 2px solid currentcolor; */
+  color: var(--secondary-link-color);
 }
 
 main input {
