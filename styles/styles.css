@@ -47,7 +47,7 @@
 
 @media (min-width: 900px) {
   :root {
-    --heading-font-size-xxl: 60px;
+    --heading-font-size-xxl: 65px;
     --heading-font-size-xl: 48px;
     --heading-font-size-l: 36px;
     --heading-font-size-m: 30px;
@@ -84,8 +84,16 @@ h4, h5, h6 {
   scroll-margin: calc(var(--nav-height) + 1em);
 }
 
-h1 { font-size: var(--heading-font-size-xxl) }
-h2 { font-size: var(--heading-font-size-xl) }
+h1 { 
+  font-size: var(--heading-font-size-xxl);
+  font-weight: 900;
+}
+
+h2 { 
+  font-size: var(--heading-font-size-l); 
+  font-family: var(--subheading-font-family);
+}
+
 h3 { font-size: var(--heading-font-size-l) }
 h4 { font-size: var(--heading-font-size-m) }
 h5 { font-size: var(--heading-font-size-s) }
