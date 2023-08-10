@@ -12,19 +12,22 @@
 
  :root {
   /* colors */
-  --link-color: #035fe6;
-  --link-hover-color: #136ff6;
+  --link-color: #004dff;
+  --secondary-link-color: #004dff;
+  --link-hover-color: #008;
   --background-color: #fff;
   --overlay-background-color: #eee;
   --highlight-background-color: #ccc;
   --text-color: #000;
 
   /* fonts */
-  --body-font-family: roboto, roboto-fallback;
-  --heading-font-family: var(--body-font-family);
-  --fixed-font-family: 'Roboto Mono', menlo, consolas, 'Liberation Mono', monospace;
+  --body-font-family: 'Graphik Regular', 'Open Sans', sans-serif;
+  --heading-font-family: 'Graphik Black', 'Open Sans', sans-serif;
+  --subheading-font-family: 'Graphik Bold', 'Open Sans', sans-serif;
+  --fixed-font-family: menlo, consolas, 'Liberation Mono', monospace;
 
   /* body sizes */
+  --body-font-size-default: 1rem;
   --body-font-size-m: 22px;
   --body-font-size-s: 18px;
   --body-font-size-xs: 16px;
@@ -42,17 +45,9 @@
 
 }
 
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 100.06%;
-  ascent-override: 95%;
-  src: local('Arial');
-}
-
-
 @media (min-width: 900px) {
   :root {
-    --heading-font-size-xxl: 60px;
+    --heading-font-size-xxl: 65px;
     --heading-font-size-xl: 48px;
     --heading-font-size-l: 36px;
     --heading-font-size-m: 30px;
@@ -62,10 +57,10 @@
 }
 
 body {
-  font-size: var(--body-font-size-m);
+  font-size: var(--body-font-size-default);
   margin: 0;
   font-family: var(--body-font-family);
-  line-height: 1.6;
+  line-height: 1.6em;
   color: var(--text-color);
   background-color: var(--background-color);
   display: none;
@@ -89,8 +84,16 @@ h4, h5, h6 {
   scroll-margin: calc(var(--nav-height) + 1em);
 }
 
-h1 { font-size: var(--heading-font-size-xxl) }
-h2 { font-size: var(--heading-font-size-xl) }
+h1 { 
+  font-size: var(--heading-font-size-xxl);
+  font-weight: 900;
+}
+
+h2 { 
+  font-size: var(--heading-font-size-l); 
+  font-family: var(--subheading-font-family);
+}
+
 h3 { font-size: var(--heading-font-size-l) }
 h4 { font-size: var(--heading-font-size-m) }
 h5 { font-size: var(--heading-font-size-s) }
@@ -135,13 +138,20 @@ a:any-link {
 }
 
 a:hover {
-  text-decoration: underline;
   color: var(--link-hover-color);
+  text-decoration: none;
 }
 
 /* buttons */
 a.button:any-link, button {
-  font-family: var(--body-font-family);
+  font-family: var(--subheading-font-family);
+  text-transform: uppercase;
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  color: var(--link-color);
+  text-decoration: none;
+
+  /* font-family: var(--body-font-family);
   display: inline-block;
   box-sizing: border-box;
   text-decoration: none;
@@ -157,23 +167,26 @@ a.button:any-link, button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 30px;
+  border-radius: 30px; */
 }
 
 a.button:hover, a.button:focus, button:hover, button:focus  {
-  background-color: var(--link-hover-color);
+  color: var(--link-hover-color);
+
+  /* background-color: var(--link-hover-color); */
   cursor: pointer;
 }
 
-button:disabled, button:disabled:hover {
+/* button:disabled, button:disabled:hover {
   background-color: var(--overlay-background-color);
   cursor: unset;
-}
+} */
 
 a.button.secondary, button.secondary {
-  background-color: unset;
-  border: 2px solid currentcolor;
-  color: var(--text-color)
+  /* background-color: unset; */
+  
+  /* border: 2px solid currentcolor; */
+  color: var(--secondary-link-color);
 }
 
 main input {
