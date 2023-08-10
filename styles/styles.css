@@ -20,11 +20,13 @@
   --text-color: #000;
 
   /* fonts */
-  --body-font-family: roboto, roboto-fallback;
-  --heading-font-family: var(--body-font-family);
-  --fixed-font-family: 'Roboto Mono', menlo, consolas, 'Liberation Mono', monospace;
+  --body-font-family: 'Graphik Regular', 'Open Sans', sans-serif;
+  --heading-font-family: 'Graphik Black', 'Open Sans', sans-serif;
+  --subheading-font-family: 'Graphik Bold', 'Open Sans', sans-serif;
+  --fixed-font-family: menlo, consolas, 'Liberation Mono', monospace;
 
   /* body sizes */
+  --body-font-size-default: 1rem;
   --body-font-size-m: 22px;
   --body-font-size-s: 18px;
   --body-font-size-xs: 16px;
@@ -42,14 +44,6 @@
 
 }
 
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 100.06%;
-  ascent-override: 95%;
-  src: local('Arial');
-}
-
-
 @media (min-width: 900px) {
   :root {
     --heading-font-size-xxl: 60px;
@@ -62,10 +56,10 @@
 }
 
 body {
-  font-size: var(--body-font-size-m);
+  font-size: var(--body-font-size-default);
   margin: 0;
   font-family: var(--body-font-family);
-  line-height: 1.6;
+  line-height: 1.6em;
   color: var(--text-color);
   background-color: var(--background-color);
   display: none;
