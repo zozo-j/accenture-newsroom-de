@@ -144,7 +144,7 @@ a:hover {
 
 /* buttons */
 a.button:any-link, button {
-  font-family: 'Graphik Semibold';
+  font-family: var(--subheading-font-family);
   text-transform: uppercase;
   font-size: var(--body-font-size-xs);
   font-weight: 600;
@@ -172,6 +172,7 @@ a.button:any-link, button {
 
 a.button:hover, a.button:focus, button:hover, button:focus  {
   color: var(--link-hover-color);
+
   /* background-color: var(--link-hover-color); */
   cursor: pointer;
 }
@@ -183,6 +184,7 @@ a.button:hover, a.button:focus, button:hover, button:focus  {
 
 a.button.secondary, button.secondary {
   /* background-color: unset; */
+  
   /* border: 2px solid currentcolor; */
   color: var(--secondary-link-color);
 }
