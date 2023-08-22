@@ -24,6 +24,8 @@
   --body-font-family: 'Graphik Regular', 'Open Sans', sans-serif;
   --heading-font-family: 'Graphik Black', 'Open Sans', sans-serif;
   --subheading-font-family: 'Graphik Bold', 'Open Sans', sans-serif;
+  --graphik-semibold: 'Graphik Semibold', 'Open Sans', sans-serif;
+  --icomoon: icomoon, menlo, consolas, 'Liberation Mono', monospace;
   --fixed-font-family: menlo, consolas, 'Liberation Mono', monospace;
 
   /* body sizes */

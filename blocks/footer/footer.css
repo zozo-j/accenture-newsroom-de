@@ -18,6 +18,37 @@ footer .columns > div {
   align-items: baseline;
 }
 
+/* Pre Footer */
+footer .pre-footer a {
+  font-family: var(--graphik-semibold);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #004dff;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+footer .pre-footer a::after {
+  font-family: var(--icomoon);
+  content: "\e900";
+  font-size: 40px;
+  font-weight: 200;
+  position: relative;
+  top: 10px;
+}
+
+footer .pre-footer ul {
+  padding: 0;
+}
+
+footer .pre-footer ul li {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+/* Footer black background */
 footer .footer-black {
   position: absolute;
   left: 0;
@@ -112,6 +143,10 @@ footer .footer-black .columns.copyright ul li a {
 }
 
 @media (min-width: 900px) {
+  footer .pre-footer {
+    padding-bottom: 95px;
+  }
+
   footer .footer-black .columns:not(.columns.copyright) > div {
     align-items: center;
   }
