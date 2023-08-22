@@ -21,7 +21,7 @@ footer .columns > div {
 /* Pre Footer */
 footer .pre-footer a {
   font-family: var(--graphik-semibold);
-  font-size: 16px;
+  font-size: var(--body-font-size-xs);
   font-weight: 600;
   line-height: 1.15;
   color: #004dff;
@@ -52,8 +52,8 @@ footer .pre-footer ul li {
 footer .footer-black {
   position: absolute;
   left: 0;
-  color: #a7a7a7;
-  background-color: black;
+  color: var(--secondary-text-color);
+  background-color: var(--highlight-background-color);
   width: 100vw;
 }
 
@@ -80,7 +80,7 @@ footer .footer-black .columns:not(.columns.copyright) > div {
 }
 
 footer .footer-black .columns:not(.columns.copyright) {
-  border-bottom: 1px solid #a7a7a7;
+  border-bottom: 1px solid var(--secondary-text-color);
 }
 
 footer .footer-black .columns ul {
@@ -98,9 +98,9 @@ footer .footer-black .columns ul li {
 
 footer .footer-black .columns ul li a {
   display: flex;
-  font-size: 14px;
+  font-size: var(--body-font-size-xxs);
   line-height: 50px;
-  color: #a7a7a7;
+  color: var(--secondary-text-color);
   text-transform: uppercase;
   text-decoration: underline;
 }
@@ -113,9 +113,9 @@ footer .footer-black .columns ul li a span.icon {
   position: relative;
   height: 35px;
   width: 35px;
-  border: 2px solid #a7a7a7;
+  border: 2px solid var(--secondary-text-color);
   border-radius: 100%;
-  color: #a7a7a7;
+  color: var(--secondary-text-color);
 }
 
 footer .footer-black .columns ul li a span.icon:hover {
@@ -137,7 +137,7 @@ footer .footer-black .columns ul li a span.icon svg {
 /* stylelint-disable-next-line no-descending-specificity */
 footer .footer-black .columns.copyright > div > div,
 footer .footer-black .columns.copyright ul li a {
-  font-size: 11px;
+  font-size: var(--body-font-size-xxxs);
   font-weight: 400;
   text-transform: none;
 }
