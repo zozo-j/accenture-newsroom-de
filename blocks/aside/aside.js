@@ -1,12 +1,35 @@
 import { createEl } from '../../scripts/scripts.js';
-import { decorateIcons, getMetadata } from '../../scripts/lib-franklin.js';
+import { decorateIcons, getMetadata, loadScript } from '../../scripts/lib-franklin.js';
+
+async function generatePDF(pageTitle) {
+  // Source HTMLElement or a string containing HTML.
+  const main = document.querySelector('main');
+  const pageName = pageTitle.replace(/[^a-z0-9]/gi, '-');
+  const { jsPDF } = window.jspdf;
+  // eslint-disable-next-line new-cap
+  const doc = new jsPDF();
+  await doc.html(main, {
+    // eslint-disable-next-line no-shadow
+    callback(doc) {
+      // Save the PDF
+      doc.save(`${pageName}`);
+    },
+    margin: [10, 10, 10, 10],
+    autoPaging: 'text',
+    x: 0,
+    y: 0,
+    width: 190, // target width in the PDF document
+    windowWidth: 900, // window width in CSS pixels
+  });
+}
 
 export default async function decorate(block) {
   block.innerText = '';
-  const social = createEl('div', { class: 'social' });
   const pageUrl = window.location.href;
   const pageTitle = getMetadata('title');
   // Create social share icons
+  const social = createEl('div', { class: 'social' });
+
   // Linkedin
   const linkedinShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${pageUrl}&title=${pageTitle}`;
   const linkedinShare = `
@@ -50,9 +73,24 @@ export default async function decorate(block) {
       <span class="icon icon-social-print" />
     </a>`;
   createEl('div', { class: 'print-share' }, printShare, social);
+
   await decorateIcons(social);
   const share = createEl('div', { class: 'share' }, social);
   const shareTitle = createEl('h4', {}, 'Share');
   share.prepend(shareTitle);
   block.append(share);
+
+  // PDF Download button
+  const addPDF = getMetadata('pdf');
+  if (addPDF && (addPDF === 'true')) {
+    const pdfButton = createEl('button', { class: 'pdf-button' }, 'DOWNLOAD PRESS RELEASE', share);
+    // Add the js2pdf script
+    await loadScript('/scripts/jspdf.umd.min.js');
+    await loadScript('/scripts/html2canvas.min.js');
+    pdfButton.addEventListener('click', async () => {
+      if (window.jspdf) {
+        await generatePDF(pageTitle);
+      }
+    });
+  }
 }
