@@ -112,7 +112,7 @@ export default {
     if (footer) footer.remove();
 
     // replace nbsps and ndash
-    main.innerHTML = main.innerHTML.replace(/&nbsp;/g, ' ').replace(/&ndash;/g, '-');
+    main.innerHTML = main.innerHTML.replace(/&nbsp;/g, ' ').replace(/&ndash;/g, '-').replace('<div style="text-align: center; background-image: none;"># # #</div>', '<br># # #');
 
     // make proxy srcs for images
     makeProxySrcs(main);
