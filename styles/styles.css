@@ -25,8 +25,11 @@
   --body-font-family: 'Graphik Regular', 'Open Sans', sans-serif;
   --heading-font-family: 'Graphik Black', 'Open Sans', sans-serif;
   --subheading-font-family: 'Graphik Bold', 'Open Sans', sans-serif;
+  --header-font-family-regular: 'Graphik Regular', arial, sans-serif;
+  --header-font-family: 'Graphik', arial, sans-serif;
   --graphik-semibold: 'Graphik Semibold', 'Open Sans', sans-serif;
   --icomoon: icomoon, menlo, consolas, 'Liberation Mono', monospace;
+  --ionicons: ionicons, menlo, consolas, 'Liberation Mono', monospace;
   --fixed-font-family: menlo, consolas, 'Liberation Mono', monospace;
 
   /* body sizes */
@@ -46,7 +49,7 @@
   --heading-font-size-xs: 18px;
 
   /* nav height */
-  --nav-height: 64px;
+  --nav-height: 50px;
 
 }
 
@@ -58,6 +61,12 @@
     --heading-font-size-m: 30px;
     --heading-font-size-s: 24px;
     --heading-font-size-xs: 22px;
+  }
+}
+
+@media (min-width: 1000px) {
+  :root {
+    --nav-height: 69px;
   }
 }
 
