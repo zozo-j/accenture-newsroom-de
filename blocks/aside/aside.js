@@ -3,7 +3,9 @@ import { decorateIcons, getMetadata, loadScript } from '../../scripts/lib-frankl
 
 async function generatePDF(pageTitle) {
   // Source HTMLElement or a string containing HTML.
-  const main = document.querySelector('main');
+  const main = document.querySelector('main').cloneNode(true);
+  const asideContainer = main.querySelector('.aside-container');
+  asideContainer.remove();
   const pageName = pageTitle.replace(/[^a-z0-9]/gi, '-');
   const { jsPDF } = window.jspdf;
   // eslint-disable-next-line new-cap
@@ -85,7 +87,8 @@ export default async function decorate(block) {
   if (addPDF && (addPDF === 'true')) {
     const pdfButton = createEl('a', { class: 'pdf-button button' }, 'DOWNLOAD PRESS RELEASE', share);
     // Add the js2pdf script
-    await loadScript('/scripts/jspdf.umd.min.js');
+    // await loadScript('/scripts/jspdf.umd.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     await loadScript('/scripts/html2canvas.min.js');
     pdfButton.addEventListener('click', async () => {
       if (window.jspdf) {
