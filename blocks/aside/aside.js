@@ -86,11 +86,10 @@ export default async function decorate(block) {
   const addPDF = getMetadata('pdf');
   if (addPDF && (addPDF === 'true')) {
     const pdfButton = createEl('a', { class: 'pdf-button button' }, 'DOWNLOAD PRESS RELEASE', share);
-    // Add the js2pdf script
-    // await loadScript('/scripts/jspdf.umd.min.js');
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    await loadScript('/scripts/html2canvas.min.js');
     pdfButton.addEventListener('click', async () => {
+      // Add the js2pdf script
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      await loadScript('/scripts/html2canvas.min.js');
       if (window.jspdf) {
         await generatePDF(pageTitle);
       }
@@ -113,7 +112,7 @@ export default async function decorate(block) {
   const subjectUl = createEl('ul', {}, '', subjectEl);
   subjectTagValues.split(',').forEach((subjectTag) => {
     const cleanedUpValue = subjectTag.trim().toLowerCase().replace(/[\W_]+/g, '-');
-    const link = createEl('a', { href: `/industry/${cleanedUpValue}` }, subjectTag);
+    const link = createEl('a', { href: `/subjects/${cleanedUpValue}` }, subjectTag);
     createEl('li', { class: 'subject-tag' }, link, subjectUl);
   });
 
