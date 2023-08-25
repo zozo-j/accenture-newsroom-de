@@ -28,7 +28,7 @@ async function generatePDF(pageTitle) {
 export default async function decorate(block) {
   block.innerText = '';
   const pageUrl = window.location.href;
-  const pageTitle = getMetadata('title');
+  const pageTitle = getMetadata('og:title');
   // Create social share icons
   const social = createEl('div', { class: 'social' });
 
