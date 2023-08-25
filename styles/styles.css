@@ -262,6 +262,39 @@ main .section {
     max-width: 1200px;
     margin: auto;
   }
+
+  body.article main {
+    max-width: 1200px;
+    margin: auto;
+    position: relative;
+  }
+
+  body.article main .section:not(.aside-container) {
+    max-width: 60%;    
+  }
+
+  body.article main .section.aside-container {
+    position: absolute;
+    top: 0;
+    right: 5%;
+    padding-top: calc(var(--nav-height) + 50px);
+    max-width: 25%;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  body.article main .section:not(.aside-container) {
+    max-width: 800px;    
+  }
+
+  body.article main .section.aside-container {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    padding-top: calc(var(--nav-height) + 50px);
+    max-width: 350px;
+  }
 }
 
 /* section metadata */

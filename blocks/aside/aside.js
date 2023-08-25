@@ -83,7 +83,7 @@ export default async function decorate(block) {
   // PDF Download button
   const addPDF = getMetadata('pdf');
   if (addPDF && (addPDF === 'true')) {
-    const pdfButton = createEl('button', { class: 'pdf-button' }, 'DOWNLOAD PRESS RELEASE', share);
+    const pdfButton = createEl('button', { class: 'pdf-button button' }, 'DOWNLOAD PRESS RELEASE', share);
     // Add the js2pdf script
     await loadScript('/scripts/jspdf.umd.min.js');
     await loadScript('/scripts/html2canvas.min.js');

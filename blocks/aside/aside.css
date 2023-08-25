@@ -11,7 +11,7 @@
 
 .aside .social {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   column-gap: 10px;
 }
 
