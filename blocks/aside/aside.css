@@ -38,3 +38,42 @@
   margin-right: 50px;
   text-transform: uppercase;
 }
+
+.aside .tags {
+  font-family: var(--graphik-semibold);
+  font-weight: 600;
+  color: var(--text-color);
+  max-width: 302px;
+}
+
+.aside .tags h4 {
+  font-size: var(--body-font-size-s);
+  line-height: 1.39;
+  text-transform: uppercase;
+}
+
+.aside .tags ul {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.aside .tags ul,
+.aside .tags li {
+  list-style: none;
+  padding-left: unset;
+}
+
+.aside .tags li:not(:last-of-type)::after {
+  content: "\25CF";
+  font-size: 14px;
+  font-weight: 200;
+  padding: 0 10px;
+}
+
+.aside .tags a {
+  color: var(--text-color);
+  font-size: 12px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #004dff;
+  line-height: 35px;
+}

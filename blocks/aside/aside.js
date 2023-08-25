@@ -93,4 +93,29 @@ export default async function decorate(block) {
       }
     });
   }
+
+  // Tags
+  const industryTagValues = getMetadata('industry');
+  const subjectTagValues = getMetadata('subject');
+  const industryEl = createEl('div', { class: 'industry' }, '<h4>INDUSTRY TAGS</h4>');
+  const subjectEl = createEl('div', { class: 'subject' }, '<h4>SUBJECT TAGS</h4>');
+
+  const industryUl = createEl('ul', {}, '', industryEl);
+  industryTagValues.split(',').forEach((industryTag) => {
+    const cleanedUpValue = industryTag.trim().toLowerCase().replace(/[\W_]+/g, '-');
+    const link = createEl('a', { href: `/industry/${cleanedUpValue}` }, industryTag);
+    createEl('li', { class: 'industry-tag' }, link, industryUl);
+  });
+
+  const subjectUl = createEl('ul', {}, '', subjectEl);
+  subjectTagValues.split(',').forEach((subjectTag) => {
+    const cleanedUpValue = subjectTag.trim().toLowerCase().replace(/[\W_]+/g, '-');
+    const link = createEl('a', { href: `/industry/${cleanedUpValue}` }, subjectTag);
+    createEl('li', { class: 'subject-tag' }, link, subjectUl);
+  });
+
+  const tags = createEl('div', { class: 'tags' });
+  tags.append(industryEl);
+  tags.append(subjectEl);
+  block.append(tags);
 }
