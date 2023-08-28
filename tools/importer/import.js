@@ -1,10 +1,13 @@
 /* eslint-disable no-undef */
+
+const isCategoryPage = (url) => (url.includes('/industries/') || url.includes('/subjects/'));
+
 const createMetadataBlock = (main, document, url) => {
   const meta = {};
   // add the template
   if (url.includes('/news/')) {
     meta.Template = 'Article';
-  } else if (url.startsWith('/industry/') || url.startsWith('/subjects/')) {
+  } else if (isCategoryPage(url)) {
     meta.Template = 'Category';
   }
 
@@ -13,7 +16,17 @@ const createMetadataBlock = (main, document, url) => {
     meta.Title = title.content;
   } else {
     const titleFromContent = document.head.querySelector('title');
-    if (titleFromContent) meta.Title = titleFromContent.innerText;
+    if (titleFromContent) meta.Title = titleFromContent.textContent;
+  }
+  if (isCategoryPage(url)) {
+    const t = document.querySelector('#sec-hero h1');
+    if (t) {
+      meta.Title = t.textContent.trim();
+    }
+    const subtitle = document.querySelector('#sec-hero h1+.row');
+    if (subtitle) {
+      meta.Subtitle = subtitle.textContent.trim();
+    }
   }
 
   const desc = document.head.querySelector('meta[property="og:description"]');
@@ -23,6 +36,9 @@ const createMetadataBlock = (main, document, url) => {
     const description = document.head.querySelector('meta[name="description"]');
     if (description) meta.Description = description.content.replace(/&ndash;/g, '-');
   }
+
+  const keywords = document.head.querySelector('meta[name="keywords"]');
+  if (keywords) meta.Keywords = keywords.content;
 
   // Published date
   const publishedDate = document.head.querySelector('meta[name="datepublic"]');
@@ -44,7 +60,7 @@ const createMetadataBlock = (main, document, url) => {
     subjectTagsContainer.querySelectorAll('li').forEach((li) => {
       subjectTags.push(li.textContent.trim());
     });
-    meta.Subject = subjectTags.join(', ');
+    meta.Subjects = subjectTags.join(', ');
   }
   // helper to create the metadata block
   const block = WebImporter.Blocks.getMetadataBlock(document, meta);
@@ -54,6 +70,27 @@ const createMetadataBlock = (main, document, url) => {
 
   // returning the meta object might be usefull to other rules
   return meta;
+};
+
+const createNewsListBlock = (main, document, url) => {
+  const categoryContainer = main.querySelector('section.container-block');
+  const cells = [
+    ['Newslist'],
+  ];
+  const titleEl = main.querySelector('#sec-hero h1');
+  let title = '';
+  if (titleEl) {
+    title = titleEl.textContent.trim();
+  }
+  if (url.includes('/industries/')) {
+    cells.push(['Industry', title]);
+  } else if (url.includes('/subjects/')) {
+    cells.push(['Subjects', title]);
+  }
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  categoryContainer.replaceWith(table);
+  const secHero = main.querySelector('#sec-hero');
+  if (secHero) secHero.remove();
 };
 
 const makeProxySrcs = (main, host = 'https://newsroom.accenture.com') => {
@@ -121,6 +158,14 @@ export default {
     // remove right nav
     const rightNav = main.querySelector('#tek-wrap-rightrail');
     if (rightNav) rightNav.remove();
+
+    if (isCategoryPage(url)) {
+      createNewsListBlock(main, document, url);
+      if (url.endsWith('/')) {
+        // eslint-disable-next-line no-param-reassign
+        url = url.slice(0, -1);
+      }
+    }
 
     // main page import - "element" is provided, i.e. a docx will be created
     results.push({
