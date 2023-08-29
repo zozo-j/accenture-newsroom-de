@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-
 const isCategoryPage = (url) => (url.includes('/industries/') || url.includes('/subjects/'));
 
 const createMetadataBlock = (main, document, url) => {
@@ -154,7 +153,8 @@ export default {
     // make proxy srcs for images
     makeProxySrcs(main);
 
-    createMetadataBlock(main, document, url);
+    const meta = createMetadataBlock(main, document, url);
+
     // remove right nav
     const rightNav = main.querySelector('#tek-wrap-rightrail');
     if (rightNav) rightNav.remove();
@@ -167,12 +167,20 @@ export default {
       }
     }
 
+    if (meta.PublishedDate && url.includes('/news/')) {
+      const publishedYear = new Date(meta.PublishedDate).getFullYear().toString().trim();
+      const newPath = new URL(url).pathname.replace('.htm', '').replace('/news/', `/news/${publishedYear}/`);
+      results.push({
+        element: main,
+        path: newPath,
+      });
+      return results;
+    }
     // main page import - "element" is provided, i.e. a docx will be created
     results.push({
       element: main,
       path: new URL(url).pathname.replace('.htm', ''),
     });
-
     return results;
   },
 };
