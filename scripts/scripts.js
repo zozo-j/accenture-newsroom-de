@@ -53,7 +53,7 @@ function addLongDescription(main) {
   if (template === 'Article') {
     const longDesc = main.querySelector('p').innerText;
     const newMeta = document.createElement('meta');
-    newMeta.setAttribute('name', 'longDescription');
+    newMeta.setAttribute('name', 'longdescription');
     newMeta.setAttribute('content', longDesc);
     document.head.appendChild(newMeta);
   }
