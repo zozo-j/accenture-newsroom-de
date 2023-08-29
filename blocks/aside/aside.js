@@ -105,7 +105,7 @@ export default async function decorate(block) {
   const industryUl = createEl('ul', {}, '', industryEl);
   industryTagValues.split(',').forEach((industryTag) => {
     const cleanedUpValue = industryTag.trim().toLowerCase().replace(/[\W_]+/g, '-');
-    const link = createEl('a', { href: `/industry/${cleanedUpValue}` }, industryTag);
+    const link = createEl('a', { href: `/industries/${cleanedUpValue}` }, industryTag);
     createEl('li', { class: 'industry-tag' }, link, industryUl);
   });
 

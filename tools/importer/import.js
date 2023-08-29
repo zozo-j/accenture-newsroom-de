@@ -50,7 +50,7 @@ const createMetadataBlock = (main, document, url) => {
     industryTagsContainer.querySelectorAll('li').forEach((li) => {
       industryTags.push(li.textContent.trim());
     });
-    meta.Industry = industryTags.join(', ');
+    meta.Industries = industryTags.join(', ');
   }
 
   const subjectTagsContainer = document.querySelector('#tek-wrap-rightrail .wrap-subject ul');
@@ -82,7 +82,7 @@ const createNewsListBlock = (main, document, url) => {
     title = titleEl.textContent.trim();
   }
   if (url.includes('/industries/')) {
-    cells.push(['Industry', title]);
+    cells.push(['Industries', title]);
   } else if (url.includes('/subjects/')) {
     cells.push(['Subjects', title]);
   }
