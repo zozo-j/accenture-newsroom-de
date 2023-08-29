@@ -45,6 +45,21 @@ export function createEl(name, attributes = {}, content = '', parentEl = null) {
 }
 
 /**
+ * Adds long description to the meta tags
+ * @param {Element} main The container element
+ */
+function addLongDescription(main) {
+  const template = getMetadata('template');
+  if (template === 'Article') {
+    const longDesc = main.querySelector('p').innerText;
+    const newMeta = document.createElement('meta');
+    newMeta.setAttribute('name', 'longDescription');
+    newMeta.setAttribute('content', longDesc);
+    document.head.appendChild(newMeta);
+  }
+}
+
+/**
  * Builds aside block and attaches it to main in a new section.
  * @param {Element} main The container element
  */
@@ -75,6 +90,7 @@ async function loadFonts() {
  */
 function buildAutoBlocks(main) {
   try {
+    addLongDescription(main);
     buildAsideBlock(main);
   } catch (error) {
     // eslint-disable-next-line no-console
