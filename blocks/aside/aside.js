@@ -97,7 +97,7 @@ export default async function decorate(block) {
   }
 
   // Tags
-  const industryTagValues = getMetadata('industry');
+  const industryTagValues = getMetadata('industries');
   const subjectTagValues = getMetadata('subjects');
   const industryEl = createEl('div', { class: 'industry' }, '<h4>INDUSTRY TAGS</h4>');
   const subjectEl = createEl('div', { class: 'subject' }, '<h4>SUBJECT TAGS</h4>');
