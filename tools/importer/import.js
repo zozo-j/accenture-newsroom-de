@@ -110,6 +110,30 @@ const makeProxySrcs = (main, host = 'https://newsroom.accenture.com') => {
   });
 };
 
+const collectTextNodes = (node, list) => {
+  if (node && node.nodeType && node.nodeType === Node.TEXT_NODE) {
+    list.push(node);
+  } else if (node && node.childNodes) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const childNode of node.childNodes) {
+      collectTextNodes(childNode, list);
+    }
+  }
+};
+
+const findNextBrOrpNode = (node) => {
+  let currentNode = node.nextSibling;
+
+  // Check siblings first
+  while (currentNode !== null) {
+    if (currentNode.nodeName === 'BR' || currentNode.nodeName === 'P') {
+      return currentNode;
+    }
+    currentNode = currentNode.nextSibling;
+  }
+  return null; // No next <br> node found
+};
+
 export default {
   transform: ({
     // eslint-disable-next-line no-unused-vars
@@ -148,16 +172,55 @@ export default {
     if (footer) footer.remove();
 
     // replace weird trailing backslash and ndash
-    main.innerHTML = main.innerHTML.replace(/&ndash;/g, '-').replace('<div style="text-align: center; background-image: none;"># # #</div>', '<br># # #');
+    main.innerHTML = main.innerHTML.replace(/&ndash;/g, '-')
+      .replaceAll('<br style="background-image: none;">', '<br>')
+      .replace('<div style="text-align: center; background-image: none;"># # #</div>', '<br># # #')
+      .replace('</strong> <br>', '</strong>')
+      .replaceAll(/&nbsp;<br>/g, '<br>');
 
     // make proxy srcs for images
     makeProxySrcs(main);
 
-    const meta = createMetadataBlock(main, document, url);
+    // convert title to h1 tag
+    const title = main.querySelector('#tek-wrap-centerwell article strong');
+    if (title) {
+      title.outerHTML = `<h1>${title.innerHTML}</h1>`;
+    }
+
+    // add section after abstract
+    const contentDetails = main.querySelector('#tek-wrap-centerwell article #content-details');
+    const abstractRegex = /(.*?);.*?(\d{4})|(.*?)(\d{4})\s+–\s+\b|(.*?)(\d{4})\s+-\s+\b/;
+    const contentDetailsTextNodes = [];
+    collectTextNodes(contentDetails, contentDetailsTextNodes);
+    const matchingParagraph = contentDetailsTextNodes.find(
+      (p) => abstractRegex.test(p.textContent),
+    );
+    if (matchingParagraph) {
+      const nextBrNode = findNextBrOrpNode(matchingParagraph);
+      if (nextBrNode) {
+        nextBrNode.after('---');
+      } else {
+        const brNode = document.createElement('br');
+        const insertedBrNode = matchingParagraph.parentElement.insertAdjacentElement('afterend', brNode);
+        insertedBrNode.after('---');
+      }
+    } else {
+      throw new Error('abstract not found');
+    }
+
+    // If contact info in right rail, move it to the bottom of the content
+    const authors = main.querySelectorAll('#tek-wrap-rightrail .wrap-feature.author .pad-bottom20');
+    if (authors && authors.length > 0) {
+      authors.forEach((author) => {
+        main.append(author);
+      });
+    }
 
     // remove right nav
     const rightNav = main.querySelector('#tek-wrap-rightrail');
     if (rightNav) rightNav.remove();
+
+    const meta = createMetadataBlock(main, document, url);
 
     if (isCategoryPage(url)) {
       createNewsListBlock(main, document, url);
