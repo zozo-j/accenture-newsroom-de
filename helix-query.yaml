@@ -4,9 +4,6 @@ indices:
   default:
     include:
       - /**
-    exclude:
-      - /nav
-      - /footer
     target: /query-index.json
     properties:
       lastModified:
@@ -33,3 +30,6 @@ indices:
       longdescriptionextracted:
         select: main > div:first-child
         value: innerHTML(el)
+      robots:
+        select: head > meta[name="robots"]
+        value: attribute(el, "content")
