@@ -12,6 +12,7 @@ import {
   loadBlocks,
   loadCSS,
   getMetadata,
+  loadScript,
 } from './lib-franklin.js';
 
 const LCP_BLOCKS = []; // add your LCP blocks to the list
@@ -270,6 +271,98 @@ async function loadEager(doc) {
   }
 }
 
+async function loadJQueryDateRangePicker() {
+  const filterInput = document.querySelector('#newslist-filter-input');
+  if (!filterInput) {
+    return;
+  }
+  // await import('./moment.min.js');
+  await loadScript('/scripts/moment.min.js');
+  await loadScript('/scripts/jquery-3.5.1.min.js');
+  await loadScript('/scripts/jquery.daterangepicker-20190409.js');
+  await loadCSS('/styles/daterangepicker.css');
+
+  const filterSubmit = filterInput.closest('form').querySelector('input[type="submit"]');
+  const url = new URL(window.location);
+  const usp = new URLSearchParams(url.search);
+  if (filterInput) {
+    filterInput.removeAttribute('disabled');
+    filterSubmit.removeAttribute('disabled');
+    // eslint-disable-next-line no-undef
+    const $filter = $('#newslist-filter-input');
+    $filter.dateRangePicker(
+      {
+        singleMonth: true,
+        showShortcuts: false,
+        showTopbar: false,
+        format: 'MM/DD/YY',
+        separator: ' - ',
+        monthSelect: true,
+        yearSelect: true,
+        extraClass: 'landing-picker',
+      // eslint-disable-next-line prefer-arrow-callback
+      },
+    )
+      .bind('datepicker-change', (evt, obj) => {
+        const fullDtFrm = `${(obj.date1.getMonth() + 1)}/${obj.date1.getDate()}/${obj.date1.getFullYear()}`;
+        const fullDtTo = `${(obj.date2.getMonth() + 1)}/${obj.date2.getDate()}/${obj.date2.getFullYear()}`;
+        usp.set('from_date', fullDtFrm);
+        usp.set('to_date', fullDtTo);
+        window.location.search = decodeURIComponent(usp);
+      })
+      .bind('datepicker-open', () => {
+        // eslint-disable-next-line no-undef
+        if (!$('#clear-date-range').length) {
+          // eslint-disable-next-line no-undef
+          $('.date-picker-wrapper .month-wrapper').append(
+            '<button id="clear-date-range" class="clearDateRange" name="clearDateRange" data-analytics-content-type="search intent" data-analytics-link-type="search intent" data-analytics-template-zone="body" data-analytics-module-name="nws-search-date-filter" data-analytics-link-name="clear" >Clear</button>',
+          );
+          // eslint-disable-next-line no-undef
+          $('.clearDateRange').on('click', () => {
+            // eslint-disable-next-line no-undef
+            $('#newslist-filter-input').data('dateRangePicker').clear();
+            const urlNoParamStr = window.location.toString().replace(window.location.search, '');
+            window.location = urlNoParamStr;
+          });
+        }
+        // eslint-disable-next-line no-undef
+        const testL = $('#newslist-filter-input').offset().left;
+        // eslint-disable-next-line no-undef
+        $('.date-picker-wrapper').css('left', testL);
+      });
+  }
+  const datePicker = document.querySelector('.date-picker-wrapper');
+  datePicker.classList.add('date-picker-wrapper-custom');
+  const paramDateFrom = usp.get('from_date');
+  const paramDateTo = usp.get('to_date');
+  if (paramDateFrom && paramDateTo) {
+    // eslint-disable-next-line no-undef
+    $('#newslist-filter-input').data('dateRangePicker')
+      // eslint-disable-next-line no-undef
+      .setStart(moment(paramDateFrom.toString()).format('MM/DD/YY'))
+      // eslint-disable-next-line no-undef
+      .setEnd(moment(paramDateTo.toString()).format('MM/DD/YY'));
+  }
+
+  function displayDatePicker(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    const stateOC = document.querySelector('.date-picker-wrapper').style.display === 'none';
+    if (stateOC) {
+      // eslint-disable-next-line no-undef
+      $('#newslist-filter-input').data('dateRangePicker').open();
+    } else {
+      // eslint-disable-next-line no-undef
+      $('#newslist-filter-input').data('dateRangePicker').close();
+    }
+  }
+
+  const filterButton = document.querySelector('#filter-form > input[type=submit]');
+  if (filterButton) {
+    filterButton.addEventListener('click', displayDatePicker);
+  }
+}
+
 /**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
@@ -287,8 +380,11 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
   // article processing
   addPrevNextLinksToArticles();
+
+  loadJQueryDateRangePicker();
 
   sampleRUM('lazy');
   sampleRUM.observe(main.querySelectorAll('div[data-block-name]'));
