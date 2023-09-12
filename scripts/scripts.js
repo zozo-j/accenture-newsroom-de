@@ -1,4 +1,11 @@
 import {
+  ANALYTICS_LINK_TYPE_NAV_PAGINATE,
+  ANALYTICS_TEMPLATE_ZONE_BODY,
+  ANALYTICS_MODULE_SEARCH_PAGINATION,
+  ANALYTICS_MODULE_CONTENT,
+  ANALYTICS_LINK_TYPE_CONTENT_MODULE,
+} from './constants.js';
+import {
   sampleRUM,
   buildBlock,
   loadHeader,
@@ -36,6 +43,44 @@ export function getCountryLanguage(locale) {
   if (!language) language = 'us-en';
 
   return language;
+}
+
+/**
+ * Annotates given link element with click tracking attributes
+ *
+ * @param {*} el
+ * @param {*} elName
+ * @param {*} moduleName
+ * @param {*} templateZone
+ * @param {*} linkType
+ * @returns
+ */
+
+export function annotateElWithAnalyticsTracking(el, elName, moduleName, templateZone, linkType) {
+  if (!el) return;
+  el.setAttribute('data-analytics-link-name', elName);
+  el.setAttribute('data-analytics-module-name', moduleName);
+  el.setAttribute('data-analytics-template-zone', templateZone);
+  el.setAttribute('data-analytics-link-type', linkType);
+}
+
+/**
+ * Creates link element with click tracking attributes
+ * @param {*} href
+ * @param {*} text
+ * @param {*} moduleName
+ * @param {*} templateZone
+ * @param {*} linkType
+ * @returns annotate anchor tag
+ */
+
+export function createAnnotatedLinkEl(href, text, moduleName, templateZone, linkType) {
+  const link = document.createElement('a');
+  link.href = href;
+  link.innerText = text;
+  link.title = text;
+  annotateElWithAnalyticsTracking(link, text, moduleName, templateZone, linkType);
+  return link;
 }
 
 /**
@@ -77,7 +122,7 @@ export async function fetchIndex(indexURL = '/query-index.json', limit = 1000) {
     return window.queryIndex[indexURL];
   }
   try {
-    const resp = await fetch(`${indexURL}?limit=${limit}}`);
+    const resp = await fetch(`${indexURL}?limit=${limit}`);
     const json = await resp.json();
     replaceEmptyValues(json.data);
     const queryIndex = skipInternalPaths(json.data);
@@ -119,6 +164,17 @@ export function createEl(name, attributes = {}, content = '', parentEl = null) {
   return el;
 }
 
+function findArticleIndex(queryIndex, path) {
+  let articleIndex = -1;
+  for (let i = 0; i < queryIndex.length; i += 1) {
+    if (queryIndex[i].path === path) {
+      articleIndex = i;
+      break;
+    }
+  }
+  return articleIndex;
+}
+
 async function addPrevNextLinksToArticles() {
   const template = getMetadata('template');
   const heroBlock = document.querySelector('.hero.block');
@@ -130,7 +186,7 @@ async function addPrevNextLinksToArticles() {
   const queryIndex = await fetchIndex(indexURL, limit);
   // iterate queryIndex to find current article and add prev/next links
   const currentArticlePath = window.location.pathname;
-  const currentArticleIndex = queryIndex.findIndex((row) => row.path === currentArticlePath);
+  const currentArticleIndex = findArticleIndex(queryIndex, currentArticlePath);
   if (currentArticleIndex === -1) {
     return;
   }
@@ -140,15 +196,29 @@ async function addPrevNextLinksToArticles() {
   let prevLink = '';
   let nextLink = '';
   if (prevArticle) {
-    prevLink = createEl('a', { href: prevArticle.path, class: 'prev' }, 'Previous');
+    prevLink = createEl('a', { href: prevArticle.path, class: 'prev', title: 'Prev' }, 'Previous');
   } else {
-    prevLink = createEl('a', { href: '#', class: 'prev disabled' }, 'Previous');
+    prevLink = createEl('a', { href: '#', class: 'prev disabled', title: 'Prev' }, 'Previous');
   }
   if (nextArticle) {
-    nextLink = createEl('a', { href: nextArticle.path, class: 'next' }, 'Next');
+    nextLink = createEl('a', { href: nextArticle.path, class: 'next', title: 'Next' }, 'Next');
   } else {
-    nextLink = createEl('a', { href: '#', class: 'next disabled' }, 'Next');
+    nextLink = createEl('a', { href: '#', class: 'next disabled', title: 'Next' }, 'Next');
   }
+  annotateElWithAnalyticsTracking(
+    prevLink,
+    'Prev',
+    ANALYTICS_MODULE_SEARCH_PAGINATION,
+    ANALYTICS_TEMPLATE_ZONE_BODY,
+    ANALYTICS_LINK_TYPE_NAV_PAGINATE,
+  );
+  annotateElWithAnalyticsTracking(
+    nextLink,
+    'Next',
+    ANALYTICS_MODULE_SEARCH_PAGINATION,
+    ANALYTICS_TEMPLATE_ZONE_BODY,
+    ANALYTICS_LINK_TYPE_NAV_PAGINATE,
+  );
   heroLinkContainer.append(prevLink);
   heroLinkContainer.append(nextLink);
 }
@@ -176,6 +246,23 @@ function annotateArticleSections() {
       break;
     }
   }
+  // annotate links
+  const excludeSections = ['hero-container', 'aside-container'];
+  articleSections.forEach((section) => {
+    const sectionClassList = Array.from(section.classList);
+    if (sectionClassList.some((c) => excludeSections.includes(c))) {
+      return;
+    }
+    section.querySelectorAll('a').forEach((link) => {
+      annotateElWithAnalyticsTracking(
+        link,
+        link.innerText,
+        ANALYTICS_MODULE_CONTENT,
+        ANALYTICS_TEMPLATE_ZONE_BODY,
+        ANALYTICS_LINK_TYPE_CONTENT_MODULE,
+      );
+    });
+  });
 }
 
 /**
@@ -381,9 +468,6 @@ async function loadLazy(doc) {
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
 
-  // article processing
-  addPrevNextLinksToArticles();
-
   loadJQueryDateRangePicker();
 
   sampleRUM('lazy');
@@ -396,6 +480,8 @@ async function loadLazy(doc) {
  * without impacting the user experience.
  */
 function loadDelayed() {
+  // article processing
+  window.setTimeout(() => addPrevNextLinksToArticles(), 2000);
   // eslint-disable-next-line import/no-cycle
   window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
