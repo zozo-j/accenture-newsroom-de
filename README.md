@@ -1,9 +1,9 @@
 # Accenture Newsroom
-Accenture Newsroom on AEM Franklin
+Accenture Newsroom DE on AEM Franklin
 
 ## Environments
-- Preview: https://main--accenture-newsroom--hlxsites.hlx.page/
-- Live: https://main--accenture-newsroom--hlxsites.hlx.live/
+- Preview: https://main--accenture-newsroom-de--hlxsites.hlx.page/
+- Live: https://main--accenture-newsroom-de--hlxsites.hlx.live/
 
 ## Installation
 
