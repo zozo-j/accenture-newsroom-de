@@ -48,9 +48,13 @@ function getDescription(queryIndexEntry) {
   const matchingParagraph = longdescriptionElements.find((p) => ABSTRACT_REGEX.test(p.innerText));
   const longdescription = matchingParagraph ? matchingParagraph.innerText : '';
   if (queryIndexEntry.description.length > longdescription.length) {
-    return queryIndexEntry.description;
+    return `<p>${queryIndexEntry.description}</p>`;
   }
-  return longdescription;
+  const oBr = matchingParagraph.querySelector('br');
+  if (oBr) {
+    oBr.remove();
+  }
+  return matchingParagraph.outerHTML;
 }
 
 function filterByQuery(article, query) {
@@ -487,7 +491,7 @@ export default async function decorate(block) {
             </h4>
           </div>
           <div class="newslist-item-description">
-            <p>${getDescription(e)}</p>
+            ${getDescription(e)}
           </div>
           <div class="newslist-item-footer">
             <a href="${e.path}" title="Read More">Read More <span class="read-more-arrow"></span></a>
