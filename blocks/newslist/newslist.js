@@ -79,6 +79,10 @@ function ifArticleBetweenDates(article, fromDate, toDate) {
   const to = new Date(toDate);
   if (from > to) return false;
   const date = new Date(parseInt(article.publisheddateinseconds * 1000, 10));
+  // ignore the time part of the date
+  date.setHours(0, 0, 0, 0);
+  from.setHours(0, 0, 0, 0);
+  to.setHours(0, 0, 0, 0);
   return date >= from && date <= to;
 }
 
