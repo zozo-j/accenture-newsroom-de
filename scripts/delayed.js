@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-cycle
 import { sampleRUM, loadScript, getMetadata } from './lib-franklin.js';
 // eslint-disable-next-line import/no-cycle
-import { getLocale, getCountryLanguage } from './scripts.js';
+import { getCountry, getLanguage } from './scripts.js';
 
 const ONETRUST_SDK = 'https://cdn.cookielaw.org/scripttemplates/otSDKStub.js';
 
@@ -77,7 +77,7 @@ async function addMartechStack() {
   // load jquery
   await loadScript('/scripts/jquery-3.5.1.min.js', { async: 'false' });
   // Add Adobe Analytics
-  loadScript('https://assets.adobedtm.com/55621ea95d50/e22056dd1d90/launch-EN379c80f941604b408953a2df1776d1c6-staging.min.js', { async: '' });
+  await loadScript('https://assets.adobedtm.com/55621ea95d50/e22056dd1d90/launch-EN379c80f941604b408953a2df1776d1c6-staging.min.js');
 }
 
 function getPageInstanceId(template, path, countryLanguage = '') {
@@ -135,10 +135,10 @@ function addDataLayer() {
   const pageInstanceId = getPageInstanceId(template, path);
   const pageName = `nws::${getPageName(path)}`;
   const uniquePageName = getUniquePageName(template, path);
-  const country = getLocale(path);
-  const countryLanguage = getCountryLanguage(country);
+  const country = getCountry();
+  const language = getLanguage(country);
+  const countryLanguage = `${country}-${language}`;
   const pageId = getPageInstanceId(template, path, countryLanguage);
-  const language = countryLanguage.split('-').length === 2 ? countryLanguage.split('-')[1] : 'en';
   const responsiveLayout = getResponsiveLayout();
   window.dataModel = {
     pending_data: '',
@@ -281,10 +281,10 @@ function addDataLayer() {
   };
 }
 
+// add more delayed functionality here
 addDataLayer();
+addCookieOneTrust();
 addMartechStack();
 
-// add more delayed functionality here
-addCookieOneTrust();
 // Core Web Vitals RUM collection
 sampleRUM('cwv');

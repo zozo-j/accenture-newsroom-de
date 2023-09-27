@@ -1,4 +1,4 @@
-import { readBlockConfig } from '../../scripts/lib-franklin.js';
+import { readBlockConfig, fetchPlaceholders } from '../../scripts/lib-franklin.js';
 import {
   fetchIndex,
   ffetchArticles,
@@ -6,6 +6,7 @@ import {
   annotateElWithAnalyticsTracking,
   createFilterYear,
   addEventListenerToFilterYear,
+  getPlaceholder,
 } from '../../scripts/scripts.js';
 import {
   ANALYTICS_MODULE_SEARCH,
@@ -20,6 +21,8 @@ import {
   ANALYTICS_MODULE_SEARCH_PAGINATION,
   ANALYTICS_LINK_TYPE_NAV_PAGINATE,
 } from '../../scripts/constants.js';
+
+const MAX_CHARS_IN_CARD_DESCRIPTION = 800;
 
 function getHumanReadableDate(dateString) {
   if (!dateString) return dateString;
@@ -46,15 +49,15 @@ function getDescription(queryIndexEntry) {
   div.innerHTML = longdescriptionextracted;
   const longdescriptionElements = Array.from(div.querySelectorAll('p'));
   const matchingParagraph = longdescriptionElements.find((p) => ABSTRACT_REGEX.test(p.innerText));
-  const longdescription = matchingParagraph ? matchingParagraph.innerText : '';
+  let longdescription = matchingParagraph ? matchingParagraph.outerHTML : '';
   if (queryIndexEntry.description.length > longdescription.length) {
-    return `<p>${queryIndexEntry.description}</p>`;
+    longdescription = `<p>${queryIndexEntry.description}</p>`;
+  } else if (longdescription.length > MAX_CHARS_IN_CARD_DESCRIPTION) {
+    longdescription = `<p>${matchingParagraph.innerHTML.substring(0, MAX_CHARS_IN_CARD_DESCRIPTION)}...</p>`;
   }
-  const oBr = matchingParagraph.querySelector('br');
-  if (oBr) {
-    oBr.remove();
-  }
-  return matchingParagraph.outerHTML;
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = longdescription;
+  return wrapper.innerHTML;
 }
 
 function filterByQuery(article, query) {
@@ -79,6 +82,10 @@ function ifArticleBetweenDates(article, fromDate, toDate) {
   const to = new Date(toDate);
   if (from > to) return false;
   const date = new Date(parseInt(article.publisheddateinseconds * 1000, 10));
+  // ignore the time part of the date
+  date.setHours(0, 0, 0, 0);
+  from.setHours(0, 0, 0, 0);
+  to.setHours(0, 0, 0, 0);
   return date >= from && date <= to;
 }
 
@@ -300,14 +307,16 @@ function updateSearchSubHeader(block, start, end, totalResults) {
   }
 }
 
-function updateYearsDropdown(block, articles) {
+async function updateYearsDropdown(block, articles) {
+  const placeholders = await fetchPlaceholders();
+  const pYear = getPlaceholder('year', placeholders);
   const years = window.categoryArticleYears || getYears(articles);
   let options = years.map((y) => (`<div class="filter-year-item" value="${y}"  data-analytics-link-name="${y}"
   data-analytics-module-name=${ANALYTICS_MODULE_YEAR_FILTER} data-analytics-template-zone=""
   data-analytics-link-type="${ANALYTICS_LINK_TYPE_FILTER}">${y}</div>`)).join('');
   options = `<div class="filter-year-item" value="" data-analytics-link-name="YEAR"
   data-analytics-module-name=${ANALYTICS_MODULE_YEAR_FILTER} data-analytics-template-zone=""
-  data-analytics-link-type="${ANALYTICS_LINK_TYPE_FILTER}">YEAR</div> ${options}`;
+  data-analytics-link-type="${ANALYTICS_LINK_TYPE_FILTER}">${pYear}</div> ${options}`;
   const yearsDropdown = block.querySelector('.filter-year-dropdown');
   yearsDropdown.innerHTML = options;
   addEventListenerToFilterYear(document.getElementById('filter-year'), window.location.pathname);
@@ -329,6 +338,12 @@ export default async function decorate(block) {
   const key = Object.keys(cfg)[0];
   const value = Object.values(cfg)[0];
   const isSearch = key === 'query';
+  const placeholders = await fetchPlaceholders();
+  const pSearch = getPlaceholder('search', placeholders);
+  const pKeywords = getPlaceholder('keywords', placeholders);
+  const pFilterNews = getPlaceholder('filterNews', placeholders);
+  const pDateRange = getPlaceholder('dateRange', placeholders);
+  const pReadMore = getPlaceholder('readMore', placeholders);
   let shortIndex;
   const newsListContainer = document.createElement('div');
   newsListContainer.classList.add('newslist-container');
@@ -345,8 +360,8 @@ export default async function decorate(block) {
     searchHeader.classList.add('search-header-container');
     const form = `
       <form action="/search" method="get" id="search-form">
-        <input type="text" id="search-input" title="Keywords" placeholder="Keywords" name="q" value="${query}" size="40" maxlength="60">
-        <input type="submit" title="Search" value="Search">
+        <input type="text" id="search-input" title="${pKeywords}" placeholder="${pKeywords}" name="q" value="${query}" size="40" maxlength="60">
+        <input type="submit" title="${pSearch}" value="${pSearch}">
       </form>
     `;
     if (query) {
@@ -406,16 +421,16 @@ export default async function decorate(block) {
       );
     }
     const years = getYears(shortIndex);
-    const filterYear = createFilterYear(years, year, window.location.pathname);
+    const filterYear = await createFilterYear(years, year, window.location.pathname);
     // prepend filter form and year picker
     const newsListHeader = document.createElement('div');
     newsListHeader.classList.add('newslist-header-container');
     newsListHeader.innerHTML = `
       <form action="${window.location.pathname}" method="get" id="filter-form">
-        <label for="newslist-filter-input">Filter News
+        <label for="newslist-filter-input">${pFilterNews}
           <span class="newslist-filter-arrow"></span>
         </label>
-        <input type="text" id="newslist-filter-input" title="Date Range" name="date" value="DATE RANGE" size="40" maxlength="60" disabled>
+        <input type="text" id="newslist-filter-input" title="${pDateRange}" name="date" value="${pDateRange}" size="40" maxlength="60" disabled>
         <input type="submit" value="" disabled>
       </form>
     `;
@@ -441,16 +456,16 @@ export default async function decorate(block) {
     newsListHeader.classList.add('newslist-header-container');
     newsListHeader.innerHTML = `
       <form action="/search" method="get" id="newslist-search-form">
-        <label for="newslist-search-input">Search</label>
-        <input type="text" id="newslist-search-input" title="Keywords" name="q" value="" size="40" maxlength="60">
-        <input type="submit" value="Search">
+        <label for="newslist-search-input">${pSearch}</label>
+        <input type="text" id="newslist-search-input" title="${pKeywords}" name="q" value="" size="40" maxlength="60">
+        <input type="submit" value="${pSearch}">
       </form>
 
       <form action="${window.location.pathname}" method="get" id="filter-form">
-        <label for="newslist-filter-input">Filter News
+        <label for="newslist-filter-input">${pFilterNews}
           <span class="newslist-filter-arrow"></span>
         </label>
-        <input type="text" id="newslist-filter-input" title="Date Range" name="date" value="DATE RANGE" size="40" maxlength="60" disabled>
+        <input type="text" id="newslist-filter-input" title="${pDateRange}" name="date" value="${pDateRange}" size="40" maxlength="60" disabled>
         <input type="submit" value="" disabled>
       </form>
     `;
@@ -494,7 +509,7 @@ export default async function decorate(block) {
             ${getDescription(e)}
           </div>
           <div class="newslist-item-footer">
-            <a href="${e.path}" title="Read More">Read More <span class="read-more-arrow"></span></a>
+            <a href="${e.path}" title="${pReadMore}">${pReadMore} <span class="read-more-arrow"></span></a>
             <div class="newslist-item-publisheddate">
               ${getHumanReadableDate(e.publisheddateinseconds * 1000)}
             </div>
@@ -526,13 +541,13 @@ export default async function decorate(block) {
   if (totalResults !== -1) {
     updatePagination(paginationContainer, totalResults, pageOffset);
   } else {
-    document.addEventListener('ffetch-articles-completed', (event) => {
+    document.addEventListener('ffetch-articles-completed', async (event) => {
       updatePagination(paginationContainer, event.detail.length, pageOffset);
       if (isSearch) {
         updateSearchSubHeader(block, start, end, event.detail.length);
       }
       if (key && value) {
-        updateYearsDropdown(block, event.detail);
+        await updateYearsDropdown(block, event.detail);
       }
     });
   }
